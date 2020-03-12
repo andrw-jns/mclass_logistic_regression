@@ -12,7 +12,6 @@ library(pROC)
 library(ROCR)
 library(ModelMetrics)
 
-
 memory.limit(size = 1500000)
 
 ae_synthetic_Prov <- readRDS('ae_synthetic_ProvID15318.rds')
@@ -115,6 +114,9 @@ falseNeg <- cm %>%
   select(attendances) %>% 
   unname() %>% unlist()
 
+
+
+
 # sensitivity (probability of predicting admission when patient not admitted)
 # also called 'recall'
 sensitivity <- truePos / (truePos + falseNeg)
@@ -129,6 +131,14 @@ PPV <- truePos / (truePos + falsePos)
 # NPV positive predictive value (probability that the patient will not be admitted when model suggests they will not be admitted) 
 NPV <- trueNeg / (trueNeg + falseNeg)
 
+# accuracy (how many cases correctly assigned)
+accuracy <- (truePos + trueNeg) / (truePos + falsePos + trueNeg + falseNeg)
+
+# balanced accuracy (how many cases correctly assigned equally weighting cases and non-cases)
+balancedAccuracy <- (truePos/(truePos + falseNeg) + trueNeg/(trueNeg + falsePos))/2
+  
+# f1 (harmonic mean of PPV[precision] and sensitivity[recall])
+f1 <-  2*PPV*sensitivity / (PPV + sensitivity)
 
 
 # 2.5 EXERCISE Produce confusion matrix and performance metrics for other cutpoints --------
@@ -159,7 +169,6 @@ plot.roc(modelRoc)
 ## The probability that a randomly selected admitted attendance will have a higher modelled probability of admission 
 ##  than a randomly selected non-admitted attendance
 pROC::auc(modelRoc)
-
 
 # 2.8 Brier score ---------------------------------------------------------
 ## The mean squared difference between the modelled probability of admission and the outcome (admitted 1/0)
